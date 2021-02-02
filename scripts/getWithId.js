@@ -19,12 +19,14 @@ function getWithId(data, klc) {
     let idScan = pickAnchor(d.name, extract);
     // Push d to the results
     // NOTE:  How do I get an exact copy, not the entry itself?
-    result.push(d);
-    // Attribute the anchor and other IDs
-    result[i].idAnchor = idScan.idAnchor;
-    result[i].idOther = idScan.idOther;
-    // Increment index
-    i += 1;
+    if (idScan.idAnchor !== null) {
+      result.push(d);
+      // Attribute the anchor and other IDs
+      result[i].idAnchor = idScan.idAnchor;
+      result[i].idOther = idScan.idOther;
+      // Increment index
+      i += 1;
+    };
   });
   return result;
 }
