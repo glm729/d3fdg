@@ -1,5 +1,5 @@
 // Get the info on the clicked node
-let nc = API.getData("nodeClicked").resurrect()[0];
+let nc = API.getData("nodeClicked").resurrect();
 
 // Get the container for the output
 let container = document.getElementById("nodeClickedContent");
@@ -55,6 +55,10 @@ addRow(table, ["Anchor ID", nc.idAnchor]);
 
 // Assign contents for the other IDs, if any
 addRow(table, ["Other IDs", (!nc.idOther) ? '' : nc.idOther.join(", ")]);
+
+// Get biofluids data
+let biofluid = [...new Set(nc.biofluid.filter(x => x !== ''))];
+addRow(table, ["Biofluid", (biofluid.length === 0) ? '' : biofluid.join(", ")]);
 
 // Assign contents for regulation:
 // - If regulation is unique, assign that

@@ -371,9 +371,9 @@ let functions = {
       .on("mouseout", (d, i) => nodeMouseOut(d, i));
     node.on("click", d => {
       let tmp = API.getData("withId").resurrect().filter(x => {
-        return x.name === d.target.textContent;
-      });
-      API.createData("nodeClicked", tmp)
+        return x.name === nodes[i.index].name;
+      })[0];
+      API.createData("nodeClicked", tmp);
     });
   },
   subsetData: function(name, keggData) {
