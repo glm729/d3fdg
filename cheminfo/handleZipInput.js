@@ -64,10 +64,12 @@ bg.getWithId = function(data, klc) {
   data.map(d => {
     let extract = this.subsetData(d.name, klc);
     let idScan = this.pickAnchor(d.name, extract);
-    result.push(d);
-    result[i].idAnchor = idScan.idAnchor;
-    result[i].idOther = idScan.idOther;
-    i += 1;
+    if (idScan.idAnchor !== null) {
+      result.push(d);
+      result[i].idAnchor = idScan.idAnchor;
+      result[i].idOther = idScan.idOther;
+      i += 1;
+    };
   });
   return result;
 };
