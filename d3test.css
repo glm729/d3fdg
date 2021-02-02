@@ -1,0 +1,103 @@
+/**
+ * CSS for the data processing test page, D3 network (fdg) visualisation
+ */
+/* General */
+body {
+  background-color: rgb(80, 80, 80);
+  color: rgb(190, 190, 190);
+}
+.tabContent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #242524;
+  border-top: none;
+  animation: fadeEffect 0.4s;
+}
+/* Tab buttons and row */
+.tab {
+  overflow: hidden;
+  border: 1px solid #242524;
+  background-color: #1b5294;
+}
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.1s;
+  width: 210px;
+}
+.tab button:hover {
+  background-color: #d6d1c9;
+}
+.tab button.active {
+  background-color: #d6d1c9;
+  color: black;
+}
+/* Row-based layout with divs */
+div.table {
+  display: table;
+}
+div.table > div.table-row {
+  display: table-row;
+}
+div.table-row > div.table-cell {
+  display: table-cell;
+}
+/* Input buttons (general) */
+.inputButton {
+  display: block;
+  text-align: center;
+  border-radius: 0;
+  color: black;
+  padding: 8px 16px;
+}
+/* Frames for the tab content fade effect */
+@keyframes fadeEffect {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/**
+ * Fonts
+ * NOTE:  Font loading will fail, as I'm currently using them locally.
+ *        I will not add the fonts to the repository, as I do not own them.
+ *        You may need to source them elsewhere.
+ */
+/* Font definitions */
+/*
+@font-face {
+  font-family: LiberationMono;
+  src: url(fonts/LiberationMono/LiberationMono-Regular.ttf);
+}
+@font-face {
+  font-family: LiberationMono-Bold;
+  src: url(fonts/LiberationMono/LiberationMono-Bold.ttf);
+  font-weight: bold;
+}
+@font-face {
+  font-family: LiberationMono-Italic;
+  src: url(fonts/LiberationMono/LiberationMono-Italic.ttf);
+  font-style: italic;
+}
+@font-face {
+  font-family: LiberationMono-BoldItalic;
+  src: url(fonts/LiberationMono/LiberationMono-BoldItalic.ttf);
+  font-weight: bold;
+  font-style: italic;
+}
+*/
+/* Apply fonts (global) */
+/*
+div {
+  font-family: LiberationMono;
+}
+button {
+  font-family: LiberationMono;
+}
+*/

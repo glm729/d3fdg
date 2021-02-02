@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+  <head>
+    <title>D3 Force-Directed Graph Test</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="d3test.css">
+    <!-- Import D3 -->
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://d3js.org/d3-force.v2.min.js"></script>
+    <!-- Import own scripts -->
+    <script src="scripts/assignEmptyHeader.js"></script>
+    <script src="scripts/checkDataPresent.js"></script>
+    <script src="scripts/cleanNames.js"></script>
+    <script src="scripts/convKeggListCompound.js"></script>
+    <script src="scripts/convKeggReactionEquation.js"></script>
+    <script src="scripts/convRawTsvJson.js"></script>
+    <script src="scripts/getOppose.js"></script>
+    <script src="scripts/openTab.js"></script>
+    <script src="scripts/pickAnchor.js"></script>
+    <script src="scripts/prepareVisData.js"></script>
+    <script src="scripts/processData.js"></script>
+    <script src="scripts/readFile.js"></script>
+    <script src="scripts/reduceOppose.js"></script>
+    <script src="scripts/reduceUniqueNames.js"></script>
+    <script src="scripts/runSimulation.js"></script>
+    <script src="scripts/storeKLC.js"></script>
+    <script src="scripts/storeKRE.js"></script>
+    <script src="scripts/storeRLI.js"></script>
+    <script src="scripts/subsetData.js"></script>
+    <script src="scripts/getWithId.js"></script>
+  </head>
+  <body onload="document.getElementById('defaultOpen').click();">
+    <!-- Define the tab buttons -->
+    <div class="tab">
+      <button
+        class="tabButton"
+        id="defaultOpen"
+        onclick="openTab(event, 'main');"
+        >
+        Main
+      </button>
+      <button
+        class="tabButton"
+        onclick="openTab(event, 'tab01');"
+        >
+        Data upload
+      </button>
+      <button
+        class="tabButton"
+        onclick="openTab(event, 'tab02');"
+        >
+        Data handling
+      </button>
+      <button
+        class="tabButton"
+        onclick="openTab(event, 'tab03');"
+        >
+        Visualisation
+      </button>
+    </div>
+    <!-- Define tab content -->
+    <div class="tabContent" id="main">
+      <div style="padding: 0px 14px">
+        <h2>Main Tab</h2>
+      </div>
+      <div style="padding: 0px 14px">
+        <p>
+          This page is for testing data handling for the D3 force-directed
+          graph (network) visualisation of metabolites.
+        </p>
+        <p>
+          Mr. George L. Malone, 15<sup>th</sup> of January, 2021.
+        </p>
+      </div>
+    </div>
+    <div class="tabContent" id="tab01">
+      <div style="padding: 0px 14px">
+        <h2>Data upload</h2>
+      </div>
+      <div style="padding-bottom: 6px">
+        <input
+          type="file"
+          id="klcUpload"
+          style="display: none"
+          onchange="readFile(this, storeKLC);"
+          >
+        </input>
+        <input
+          type="file"
+          accept=".tsv"
+          id="kreUpload"
+          style="display: none"
+          onchange="readFile(this, storeKRE);"
+          >
+        </input>
+        <input
+          type="file"
+          accept=".tsv"
+          id="ldUpload"
+          style="display: none"
+          onchange="readFile(this, storeRLI);"
+          >
+        </input>
+        <div class="table">
+          <div class="table-row">
+            <div class="table-cell">
+              <button
+                class="inputButton"
+                onclick="document.getElementById('klcUpload').click();"
+                >
+                Upload KEGG List Compound
+              </button>
+            </div>
+            <div class="table-cell">
+              <button
+                class="inputButton"
+                onclick="document.getElementById('kreUpload').click();"
+                >
+                Upload KEGG Reaction equations
+              </button>
+            </div>
+            <div class="table-cell">
+              <button
+                class="inputButton"
+                onclick="document.getElementById('ldUpload').click();"
+                >
+                Upload literature data TSV
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tabContent" id="tab02">
+      <div style="padding-bottom: 14px">
+        <h2>Data handling</h2>
+      </div>
+      <div class="table">
+        <div class="table-row">
+          <div class="table-cell">
+            Press the Submit button when all data are loaded (previous tab):
+          </div>
+          <div class="table-cell">
+            <button
+              class="inputButton"
+              onclick="processData();"
+              >
+              SUBMIT!
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tabContent" id="tab03">
+      <div style="padding-bottom: 14px">
+        <h2>Visualisation</h2>
+      </div>
+      <div id="svgSink">
+        <svg id="svgGraph" height="720px" width="900px"></svg>
+      </div>
+    </div>
+  </body>
+</html>
