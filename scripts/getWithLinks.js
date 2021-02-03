@@ -12,4 +12,4 @@
 function getWithLinks(withId, opposeReduced) {
   let idAll = opposeReduced.map(x => [x.lhs, x.rhs]).flat();
   return withId.filter(x => idAll.indexOf(x.idAnchor) !== -1);
-};
+}
