@@ -129,8 +129,21 @@ addRow(["Found entries with ID", (Date.now() - t0) / 1000]);
 let opposeReduced = bg.reduceOppose(withId, bg.getOppose(withId, kre));
 addRow(["Got reduced opposing compounds", (Date.now() - t0) / 1000]);
 
+/* Function and operations for getting only nodes with links */
+function getWithLinks(withId, opposeRed) {
+  let idAll = opposeRed.map(x => [x.lhs, x.rhs]).flat();
+  return withId.filter(x => idAll.indexOf(x.idAnchor) !== -1);
+};
+
+let withLinks = getWithLinks(withId, opposeReduced);
+
+// Get links
+let links = opposeReduced.map(o => {
+  return {"source": o.lhs, "target": o.rhs};
+});
+
 // Get visualisation data
-let visData = bg.prepareVisData(withId, opposeReduced);
+let visData = {"nodes": withLinks, "links": links};
 addRow(["Visualisation data prepared", (Date.now() - t0) / 1000]);
 
 // Run the simulation

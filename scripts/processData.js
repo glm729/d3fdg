@@ -27,9 +27,16 @@ function processData() {
   console.log(`Stored oppose as "_opp".`);
   let opposeReduced = reduceOppose(withId, oppose);
   window._opr = opposeReduced;
-  console.log(`Stored opposeReduced as "_opr".`)
+  console.log(`Stored opposeReduced as "_opr".`);
+  let withLinks = getWithLinks(withId, opposeReduced);
+  window._wli = withLinks;
+  console.log(`Stored nodes with links as "_wli".`);
   console.log(`Preparing vis data.`);
-  let visData = prepareVisData(withId, opposeReduced);
+  let links = opposeReduced.map(o => {
+    return {"source": o.lhs, "target": o.rhs};
+  });
+  let visData = {"nodes": withLinks, "links": links};
+  window._vis = visData;
   console.log(`Vis data prepared, sending to SVG.`);
   runSimulation(visData);
 }

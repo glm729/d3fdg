@@ -251,7 +251,7 @@ let functions = {
     const nodes = data.nodes.map(d => Object.create(d));
     const links = data.links.map(d => Object.create(d));
     const simulation = d3.forceSimulation(nodes)
-      .force("link", d3.forceLink(links).id(d => d.name))
+      .force("link", d3.forceLink(links).id(d => d.idAnchor))
       .force("charge", d3.forceManyBody())
       .force("x", d3.forceX())
       .force("y", d3.forceY());
@@ -277,7 +277,7 @@ let functions = {
     };
     const link = g.append("g")
         .attr("stroke", "#999")
-        .attr("stroke-opacity", 0.6)
+        .attr("stroke-opacity", 0.7)
       .selectAll("line")
       .data(links)
       .join("line")
@@ -289,7 +289,17 @@ let functions = {
       .data(nodes)
       .join("circle")
         .attr("r", 5)
-        .attr("fill", d => d.colour)
+        .attr("fill", d => {
+          let col = null;
+          let rs = [...new Set(d.regulation)];
+          col = (rs.length > 1) ? "cyan" : null;
+          if (col === null) {
+            if (rs[0] === "increased") col = "green";
+            if (rs[0] === "decreased") col = "red";
+            if (col === null) col = "cyan";
+          };
+          return col;
+        })
         .call(drag(simulation));
     const text = g.append("g")
         .attr("visibility", "hidden")
@@ -357,7 +367,7 @@ let functions = {
     };
     function nodeMouseOut(d, i) {
       link
-        .style("opacity", 1)
+        .style("opacity", 0.7)
         .style("stroke", "#999");
       node
         .style("opacity", 1)
@@ -366,15 +376,16 @@ let functions = {
         .style("visibility", "hidden")
         .style("font-weight", "normal");
     };
-    node
-      .on("mouseover", (d, i) => nodeMouseOver(d, i))
-      .on("mouseout", (d, i) => nodeMouseOut(d, i));
-    node.on("click", d => {
+    function nodeClick(d, i) {
       let tmp = API.getData("withId").resurrect().filter(x => {
         return x.name === nodes[i.index].name;
       })[0];
       API.createData("nodeClicked", tmp);
-    });
+    };
+    node
+      .on("mouseover", (d, i) => nodeMouseOver(d, i))
+      .on("mouseout", (d, i) => nodeMouseOut(d, i))
+      .on("click", (d, i) => nodeClick(d, i));
   },
   subsetData: function(name, keggData) {
     let nPat = name.replace(/(ate|ic acid)$/, "(ate|ic acid)");

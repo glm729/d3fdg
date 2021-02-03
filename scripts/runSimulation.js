@@ -13,9 +13,10 @@
  *     understand the syntax of the latter
  * - Modified to incorporate highlighting nodes on mouseover
  * - Modified to incorporate node labelling on mouseover
+ * - Modified to accept changes to input data
  *
  * @param {Object} data Input data for the simulation, containing the `nodes`
- * and `links` data.  This will likely be from `prepareVisData`.
+ * and `links` data.
  * @param {String} idSvg ID of th DOM node for the SVG.  This may be defeated
  * by the d3.select("svg") call, which I will likely need to check, but it may
  * not be a concern if there aren't multiple SVGs in the document.
@@ -37,7 +38,7 @@ function runSimulation(data, idSvg = "svgGraph") {
   const links = data.links.map(d => Object.create(d));
   // Initialise the simulation with the nodes data and apply forces
   const simulation = d3.forceSimulation(nodes)
-    .force("link", d3.forceLink(links).id(d => d.name))
+    .force("link", d3.forceLink(links).id(d => d.idAnchor))
     .force("charge", d3.forceManyBody())
     .force("x", d3.forceX())
     .force("y", d3.forceY());
@@ -79,7 +80,17 @@ function runSimulation(data, idSvg = "svgGraph") {
     .data(nodes)
     .join("circle")
       .attr("r", 5)
-      .attr("fill", d => d.colour)
+      .attr("fill", d => {
+        let col = null;
+        let rs = [...new Set(d.regulation)];
+        col = (rs.length > 1) ? "cyan" : null;
+        if (col === null) {
+          if (rs[0] === "increased") col = "green";
+          if (rs[0] === "decreased") col = "red";
+          if (col === null) col = "cyan";
+        };
+        return col;
+      })
       .call(drag(simulation));
   // Create the text
   const text = g.append("g")
