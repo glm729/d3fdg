@@ -7,6 +7,8 @@
     <!-- Import D3 -->
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="https://d3js.org/d3-force.v2.min.js"></script>
+    <!-- Import JSZip -->
+    <script src="jszip.min.js"></script>
     <!-- Import own scripts -->
     <script src="scripts/assignEmptyHeader.js"></script>
     <script src="scripts/checkDataPresent.js"></script>
@@ -21,6 +23,7 @@
     <script src="scripts/pickAnchor.js"></script>
     <script src="scripts/prepareVisData.js"></script>
     <script src="scripts/processData.js"></script>
+    <script src="scripts/processZip.js"></script>
     <script src="scripts/readFile.js"></script>
     <script src="scripts/reduceOppose.js"></script>
     <script src="scripts/reduceUniqueNames.js"></script>
@@ -29,6 +32,7 @@
     <script src="scripts/storeKRE.js"></script>
     <script src="scripts/storeRLI.js"></script>
     <script src="scripts/subsetData.js"></script>
+    <script src="scripts/unzip.js"></script>
   </head>
   <body onload="document.getElementById('defaultOpen').click();">
     <!-- Define the tab buttons -->
@@ -44,25 +48,13 @@
         class="tabButton"
         onclick="openTab(event, 'tab01');"
         >
-        Data upload
-      </button>
-      <button
-        class="tabButton"
-        onclick="openTab(event, 'tab02');"
-        >
-        Data handling
-      </button>
-      <button
-        class="tabButton"
-        onclick="openTab(event, 'tab03');"
-        >
         Visualisation
       </button>
     </div>
     <!-- Define tab content -->
     <div class="tabContent" id="main">
       <div style="padding: 0px 14px">
-        <h2>Main Tab</h2>
+        <h1>Main Tab</h1>
       </div>
       <div style="padding: 0px 14px">
         <p>
@@ -70,89 +62,36 @@
           graph (network) visualisation of metabolites.
         </p>
         <p>
-          Mr. George L. Malone, 15<sup>th</sup> of January, 2021.
+          Mr. George L. Malone, 3<sup>rd</sup> of February, 2021.
         </p>
       </div>
-    </div>
-    <div class="tabContent" id="tab01">
+      <hr>
       <div style="padding: 0px 14px">
         <h2>Data upload</h2>
       </div>
       <div style="padding-bottom: 6px">
         <input
           type="file"
-          id="klcUpload"
-          style="display: none"
-          onchange="readFile(this, storeKLC);"
+          id="zipUpload"
+          style="display: none;"
+          onchange="processZip();"
           >
         </input>
-        <input
-          type="file"
-          accept=".tsv"
-          id="kreUpload"
-          style="display: none"
-          onchange="readFile(this, storeKRE);"
-          >
-        </input>
-        <input
-          type="file"
-          accept=".tsv"
-          id="ldUpload"
-          style="display: none"
-          onchange="readFile(this, storeRLI);"
-          >
-        </input>
-        <div class="table">
+        <div class="table" style="padding-left: 14px">
           <div class="table-row">
             <div class="table-cell">
               <button
                 class="inputButton"
-                onclick="document.getElementById('klcUpload').click();"
+                onclick="document.getElementById('zipUpload').click();"
                 >
-                Upload KEGG List Compound
-              </button>
-            </div>
-            <div class="table-cell">
-              <button
-                class="inputButton"
-                onclick="document.getElementById('kreUpload').click();"
-                >
-                Upload KEGG Reaction equations
-              </button>
-            </div>
-            <div class="table-cell">
-              <button
-                class="inputButton"
-                onclick="document.getElementById('ldUpload').click();"
-                >
-                Upload literature data TSV
+                Upload ZIP
               </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="tabContent" id="tab02">
-      <div style="padding-bottom: 14px">
-        <h2>Data handling</h2>
-      </div>
-      <div class="table">
-        <div class="table-row">
-          <div class="table-cell">
-            Press the Submit button when all data are loaded (previous tab):
-          </div>
-          <div class="table-cell">
-            <button
-              class="inputButton"
-              onclick="processData();"
-              >
-              SUBMIT!
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="tabContent" id="tab03">
+    <div class="tabContent" id="tab01">
       <div style="padding-bottom: 14px">
         <h2>Visualisation</h2>
       </div>
