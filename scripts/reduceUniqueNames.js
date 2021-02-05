@@ -38,26 +38,4 @@ function reduceUniqueNames(data, key = "name") {
     };
   });
   return result;
-  /**
-   * NOTE:  The following is commented out because I'm not sure how useful it
-   * will really be.  It involves the loss of some connections, namely, that
-   * once the Set is formed (and sorted, if performed), the association between
-   * which had what (at each index) is lost.  This originally was placed after
-   * looping over the data but before the return statement.
-   */
-  /**
-  // Map over the result
-  result.map(r => {
-    // Get the keys, minus the key for name or the key for times reported
-    let keys = Object.keys(r).filter(x => x !== key && x !== "timesReported");
-    // Map over the keys
-    keys.map(k => {
-      // Get the unique entries, for replacement
-      let toReplace = [...new Set(r[k])].sort();
-      // If unique, use it, else use the array
-      r[k] = (toReplace.length === 1) ? toReplace[0] : toReplace;
-    });
-  });
-  //
-  */
 }

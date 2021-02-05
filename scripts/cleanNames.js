@@ -17,7 +17,10 @@ function cleanNames(data, key = "name") {
     // Get all keys for the current row except the key for name
     let keys = Object.keys(d).filter(x => x !== key);
     // Get the clean name
-    let nameClean = d[key].toLowerCase().replace(/\**( \(.+)?$/, '');
+    let nameClean = d[key]
+      .toLowerCase()
+      .replace(/\**( \(.+)?$/, '')
+      .replace(/(ate|ic acid)$/, "ate");
     // If there are multiple names in the entry
     if (nameClean.match(/[\/\+]/) !== null) {
       // Split up the name and trim whitespace

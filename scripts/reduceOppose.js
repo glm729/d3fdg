@@ -23,7 +23,6 @@ function reduceOppose(withId, oppose) {
       // Replace the ID with the anchor if it matches any other ID
       if (w.idOther.indexOf(o.lhs) !== -1) o.lhs = w.idAnchor;
       if (w.idOther.indexOf(o.rhs) !== -1) o.rhs = w.idAnchor;
-      // NOTE:  Change these to .includes(...)?
     });
     // If the opposing compounds are identical, don't introduce a loop
     if (o.lhs === o.rhs) return;
@@ -40,7 +39,6 @@ function reduceOppose(withId, oppose) {
     })
     // If it isn't present in the results, push it to the results
     if (!isPresent) result.push(o);
-    // NOTE:  Change this to notPresent to avoid repeated negations?
   });
   return result;
 }
