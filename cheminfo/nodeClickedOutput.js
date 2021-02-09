@@ -1,73 +1,137 @@
-// Get the info on the clicked node
+/* Function definitions */
+
+
+function divTable() {
+  let table = document.createElement("div");
+  table.setAttribute("class", "table");
+  table.style.display = "table";
+  return table;
+};
+
+function divRow() {
+  let row = document.createElement("div");
+  row.setAttribute("class", "table-row");
+  row.style.display = "table-row";
+  return row;
+};
+
+function divRowHeader() {
+  let row = divRow();
+  row.style.fontWeight = "bold";
+  row.style.borderBottom = "1px solid black";
+  return row;
+};
+
+function divCell() {
+  let cell = document.createElement("div");
+  cell.setAttribute("class", "table-cell");
+  cell.style.display = "table-cell";
+  cell.style.padding = "2px 4px";
+  return cell;
+};
+
+function divCellTitle(text) {
+  let cell = divCell();
+  cell.style.borderRight = "1px solid black";
+  if (text !== undefined) cell.innerHTML = text;
+  return cell;
+};
+
+function multiRowDiv(table, title, content) {
+  let rowFirst = divRow();
+  let titleFirst = divCellTitle(title);
+  let contentFirst = divCell(title);
+  contentFirst.innerHTML = content[0];
+  rowFirst.appendChild(titleFirst);
+  rowFirst.appendChild(contentFirst);
+  table.appendChild(rowFirst);
+  content.slice(1).map(c => {
+    let row = divRow();
+    row.appendChild(divCellTitle());
+    let cell = divCell();
+    cell.innerHTML = c;
+    row.appendChild(cell);
+    table.appendChild(row);
+  });
+  return;
+};
+
+function singleRowDiv(table, title, content) {
+  let row = divRow();
+  row.appendChild(divCellTitle(title));
+  if (typeof(content) === "object") {
+    content.map(c => {
+      let cell = divCell();
+      cell.innerHTML = c;
+      row.appendChild(cell);
+    });
+    table.appendChild(row);
+    return;
+  };
+  let cell = divCell();
+  cell.innerHTML = content;
+  row.appendChild(cell);
+  table.appendChild(row);
+  return;
+};
+
+function addRow(table, title, content) {
+  if (content === null) {
+    let row = divRow();
+    row.appendChild(divCellTitle(title));
+    row.appendChild(divCell());
+    table.appendChild(row);
+    return;
+  };
+  if (typeof(content) === "object" && content.length > 1) {
+    multiRowDiv(table, title, content);
+    return;
+  };
+  singleRowDiv(table, title, content);
+  return;
+};
+
+
+/* Operations */
+
+// Get data for clicked node
 let nc = API.getData("nodeClicked").resurrect();
 
-// Get the container for the output
+// Get output container
 let container = document.getElementById("nodeClickedContent");
 
-// Refresh innerHTML of the container on each new node
+// Reset the innerHTML on each click
 container.innerHTML = '';
 
 // Initialise the table
-let table = document.createElement("div");
-table.setAttribute("id", "nodeClickedTable");
-table.style.display = "table";
+let table = divTable();
 
-// Helper function for adding a table row
-function addRow(table, content) {
-  let row = document.createElement("div");
-  row.style.display = "table-row";
-  content.map(c => {
-    let cell = document.createElement("div");
-    cell.style.display = "table-cell";
-    cell.style.paddingLeft = "6px";
-    cell.style.paddingRight = "6px";
-    if (c === content[0]) cell.style.borderRight = "solid 1px black";
-    cell.innerHTML = c;
-    row.appendChild(cell);
-  });
-  table.appendChild(row);
-};
+// Add a header row
+let header = divRowHeader();
 
-// Initialise a header row for the table
-let header = document.createElement("div");
-header.style.display = "table-row";
-header.style.paddingBottom = "6px";
-header.style.borderBottom = "solid 1px black";
-
-// Assign the contents of the header row
 ["Attribute", "Content"].map(c => {
-  let cell = document.createElement("div");
-  cell.style.display = "table-cell";
-  cell.style.fontWeight = "bold";
-  cell.style.paddingLeft = "6px";
-  cell.style.paddingRight = "6px";
-  if (c === "Attribute") cell.style.borderRight = "solid 1px black";
+  let cell = divCell();
   cell.innerHTML = c;
   header.appendChild(cell);
 });
 
-// Append the header to the table
 table.appendChild(header);
 
-// Add rows for the name and anchor ID
-addRow(table, ["Name", nc.name]);
-addRow(table, ["Anchor ID", nc.idAnchor]);
-
-// Assign contents for the other IDs, if any
-addRow(table, ["Other IDs", (!nc.idOther) ? '' : nc.idOther.join(", ")]);
-
-// Get biofluids data
-let biofluid = [...new Set(nc.biofluid.filter(x => x !== ''))];
-addRow(table, ["Biofluid", (biofluid.length === 0) ? '' : biofluid.join(", ")]);
-
-// Assign contents for regulation:
-// - If regulation is unique, assign that
-// - If regulation is not unique, note conflict
+// Add rows to the table
 let reg = [...new Set(nc.regulation)];
-addRow(table, ["Regulation", (reg.length === 1) ? reg[0] : "conflict"]);
+let bio = [...new Set(nc.biofluid.filter(x => x !== ''))].sort();
 
-// Add a row for the number of times reported
-addRow(table, ["Times reported", nc.timesReported]);
+let add = [
+  {title: "Name", content: nc.name},
+  {title: "Anchor ID", content: nc.idAnchor},
+  {title: "Other IDs", content: nc.idOther},
+  {title: "Biofluid", content: bio},
+  {title: "Regulation", content: (reg.length === 1) ? reg[0] : "conflict"},
+  {title: "Times reported", content: nc.timesReported},
+  {title: "DOI", content: [...new Set(nc.doi)].sort()}
+];
 
-// Append the completed table to the container
+add.map(a => addRow(table, a.title, a.content));
+
+// Append the table to the container
 container.appendChild(table);
