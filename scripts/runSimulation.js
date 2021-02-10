@@ -23,27 +23,24 @@
  * @return N/A
  */
 function runSimulation(data, idSvg = "svgGraph") {
-  // Get some info from the page re: where the SVG will be
-  let svgElement = document.getElementById(idSvg);
-  const width = svgElement.width.baseVal.value;
-  const height = svgElement.height.baseVal.value;
-  // Initialise the SVG
-  const svg = d3.select("#" + idSvg)  // NOTE:  SELECT NOT CREATE
-    .attr("viewBox", [-width / 2, -height / 2, width, height])
-    .attr("cursor", "move");
-  // Group the nodes and links
-  const g = svg.append("g").attr("cursor", "grab");
-  // Generate some data
-  const nodes = data.nodes.map(d => Object.create(d));
-  const links = data.links.map(d => Object.create(d));
-  // Initialise the simulation with the nodes data and apply forces
-  const simulation = d3.forceSimulation(nodes)
-    .force("link", d3.forceLink(links).id(d => d.idAnchor))
-    .force("charge", d3.forceManyBody())
-    .force("x", d3.forceX())
-    .force("y", d3.forceY());
+
+  /* Internal function definitions */
+
+  // Colour nodes (currently hardcoded)
+  function colourNode(d) {
+    let col = null;
+    let rs = [...new Set(d.regulation)];
+    col = (rs.length > 1) ? "cyan" : null;
+    if (col === null) {
+      if (rs[0] === "increased") col = "green";
+      if (rs[0] === "decreased") col = "red";
+      if (col === null) col = "cyan";
+    };
+    return col;
+  };
   // Define simulation drag actions
-  const drag = simulation => {
+  function drag(simulation) {
+  //const drag = (simulation) => {
     function dragStart(event, d) {
       if (!event.active) simulation.alphaTarget(0.4).restart();
       d.fx = d.x;
@@ -63,78 +60,6 @@ function runSimulation(data, idSvg = "svgGraph") {
       .on("drag", dragged)
       .on("end", dragEnd);
   };
-  // Create the links
-  const link = g.append("g")
-      .attr("stroke", "#999")
-      .attr("stroke-opacity", 0.6)
-      .attr("cursor", "move")
-    .selectAll("line")
-    .data(links)
-    .join("line")
-      .attr("stroke-width", 1);
-  // Create the nodes
-  const node = g.append("g")
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 1.5)
-    .selectAll("circle")
-    .data(nodes)
-    .join("circle")
-      .attr("r", 5)
-      .attr("fill", d => {
-        let col = null;
-        let rs = [...new Set(d.regulation)];
-        col = (rs.length > 1) ? "cyan" : null;
-        if (col === null) {
-          if (rs[0] === "increased") col = "green";
-          if (rs[0] === "decreased") col = "red";
-          if (col === null) col = "cyan";
-        };
-        return col;
-      })
-      .call(drag(simulation));
-  // Create the text
-  const text = g.append("g")
-      .attr("visibility", "hidden")  // Start hidden
-      .attr("pointer-events", "none")  // Don't interact with the mouse
-      .attr("font-size", "7px")  // Small font
-      .attr("text-anchor", "start")  // Default, so not technically necessary
-    .selectAll("text")
-    .data(nodes)
-    .join("text")
-      .text(d => d.name);
-  // On each tick, run actions
-  simulation.on("tick", () => {
-    link
-      .attr("x1", d => d.source.x)
-      .attr("y1", d => d.source.y)
-      .attr("x2", d => d.target.x)
-      .attr("y2", d => d.target.y);
-    node
-      .attr("cx", d => d.x)
-      .attr("cy", d => d.y);
-    // Text needs transform rather than other attributes
-    text.attr("transform", d => {
-      // d.x and d.y are slightly offset
-      return "translate(" + (d.x + 6) + "," + (d.y + 2.5) + ")";
-    });
-  });
-  // Zoom additions (other modifications above)
-  // From:  https://observablehq.com/@d3/drag-zoom
-  // My thanks and respect to Mike Bostock
-  svg.call(d3.zoom()
-    .extent([[0, 0], [width, height]])
-    .scaleExtent([1 / 2, 8])
-    .on("zoom", zoomed));
-  function zoomed({transform}) {  // Don't really know how this syntax works!
-    g.attr("transform", transform)
-  };
-  /* Highlight additions */
-  // Default opacity
-  let opacity = 0.33;
-  // Initialise indexLink
-  let indexLink = {};
-  // Assign true if the indices are linked
-  links.map(l => indexLink[l.source.index + "|" + l.target.index] = true);
   // Function to check if two nodes are connected
   function isConnected(a, b) {
     let c1 = indexLink[a.index + "|" + b.index];
@@ -157,20 +82,14 @@ function runSimulation(data, idSvg = "svgGraph") {
       });
     // Apply node styles
     node
-      .style("opacity", o => {
-        return (isConnected(i, o) || i === o) ? 1 : opacity;
-      })
-      .style("stroke", o => {
-        return (isConnected(i, o) || i === o) ? "blue" : "#fff";
-      });
+      .style("opacity", o => (isConnected(i, o) || i === o) ? 1 : opacity)
+      .style("stroke", o => (isConnected(i, o) || i === o) ? "blue" : "#fff");
     // Apply text styles
     text
       .style("visibility", o => {
         return (isConnected(i, o) || i === o) ? "visible" : "hidden";
       })
-      .style("font-weight", o => {
-        return (i === o) ? "bold" : "normal";
-      });
+      .style("font-weight", o => (i === o) ? "bold" : "normal");
   };
   // Mouseout function for nodes
   function nodeMouseOut(d, i) {
@@ -187,6 +106,92 @@ function runSimulation(data, idSvg = "svgGraph") {
       .style("visibility", "hidden")
       .style("font-weight", "normal");
   };
+  // Zoom function
+  function zoomed({transform}) {
+    g.attr("transform", transform)
+  };
+  // Transform text on drag
+  function textTransform(d) {
+    return `translate(${d.x + 6},${d.y + 2.5})`;
+  };
+
+  /* Operations */
+
+  // Get some info from the page re: where the SVG will be
+  let svgElement = document.getElementById(idSvg);
+  const width = svgElement.width.baseVal.value;
+  const height = svgElement.height.baseVal.value;
+  // Initialise the SVG
+  const svg = d3.select("#" + idSvg)  // NOTE:  SELECT NOT CREATE
+    .attr("viewBox", [-width / 2, -height / 2, width, height])
+    .attr("cursor", "move");
+  // Group the nodes and links
+  const g = svg.append("g").attr("cursor", "grab");
+  // Generate some data
+  const nodes = data.nodes.map(d => Object.create(d));
+  const links = data.links.map(d => Object.create(d));
+  // Initialise the simulation with the nodes data and apply forces
+  const simulation = d3.forceSimulation(nodes)
+    .force("link", d3.forceLink(links).id(d => d.idAnchor))
+    .force("charge", d3.forceManyBody().strength(-70))
+    .force("x", d3.forceX())
+    .force("y", d3.forceY());
+  // Create the links
+  const link = g.append("g")
+      .attr("stroke", "#999")
+      .attr("stroke-opacity", 0.6)
+      .attr("cursor", "move")
+    .selectAll(".link")
+    .data(links)
+    .join("line")
+      .attr("stroke-width", 1.3);
+  // Create the nodes
+  const node = g.append("g")
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 1.5)
+    .selectAll(".node")
+    .data(nodes)
+    .join("circle")
+      .attr("r", 5)
+      .attr("fill", colourNode)
+      .call(drag(simulation));
+  // Create the text
+  const text = g.append("g")
+      .attr("visibility", "hidden")
+      .attr("pointer-events", "none")
+      .attr("font-size", "7px")
+      .attr("text-anchor", "start")
+    .selectAll(".text")
+    .data(nodes)
+    .join("text")
+      .text(d => d.name);
+  // On each tick, run actions
+  simulation.on("tick", () => {
+    link
+      .attr("x1", d => d.source.x)
+      .attr("y1", d => d.source.y)
+      .attr("x2", d => d.target.x)
+      .attr("y2", d => d.target.y);
+    node
+      .attr("cx", d => d.x)
+      .attr("cy", d => d.y);
+    // Text needs transform rather than other attributes
+    text.attr("transform", textTransform);
+  });
+  // Zoom additions (other modifications above)
+  // From:  https://observablehq.com/@d3/drag-zoom
+  // My thanks and respect to Mike Bostock
+  svg.call(d3.zoom()
+    .extent([[0, 0], [width, height]])
+    .scaleExtent([1 / 2, 8])
+    .on("zoom", zoomed));
+  /* Highlight additions */
+  // Default opacity
+  let opacity = 0.33;
+  // Initialise indexLink
+  let indexLink = {};
+  // Assign true if the indices are linked
+  links.map(l => indexLink[l.source.index + "|" + l.target.index] = true);
   // Apply mouseover and mouseout functions
   node
     .on("mouseover", (d, i) => nodeMouseOver(d, i))
