@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="d3test.css">
     <!-- Import D3 -->
     <script src="https://d3js.org/d3.v6.min.js"></script>
-    <script src="https://d3js.org/d3-force.v2.min.js"></script>
     <!-- Import JSZip -->
     <script src="jszip.min.js"></script>
     <!-- Import own scripts -->
@@ -91,7 +90,13 @@
         <h2>Visualisation</h2>
       </div>
       <div id="svgSink">
-        <svg id="svgGraph" height="720px" width="900px"></svg>
+        <svg
+          id="svgGraph"
+          height="720px"
+          width="900px"
+          style="background: #fffaf0;"
+          >
+        </svg>
       </div>
     </div>
   </body>

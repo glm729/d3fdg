@@ -18,9 +18,9 @@ function pickAnchor(name, keggExtract) {
   // Get the base pattern (make the end a bit more ambiguous)
   let patB = name.replace(/(ate|ic acid)$/, "(ate|ic acid)");
   // Assign the patterns -- exact, levo- prefix, and dextro- prefix
-  pat.e = new RegExp("^" + patB + "$", "g");
-  pat.l = new RegExp("^l-" + patB + "$", "g");
-  pat.d = new RegExp("^d-" + patB + "$", "g");
+  pat.e = new RegExp("^" + patB + "$", "gi");
+  pat.l = new RegExp("^l-" + patB + "$", "gi");
+  pat.d = new RegExp("^d-" + patB + "$", "gi");
   // Get matches
   keggExtract.map(k => {
     k.matchName.map(n => {
