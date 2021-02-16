@@ -150,7 +150,9 @@ function runSimulation(data, idSvg = "svgGraph") {
     .selectAll(".link")
     .data(links)
     .join("line")
-      .attr("stroke-width", 1);
+      .attr("stroke-width", 1)
+      .attr("class", "link")
+      .attr("id", (d, i) => `linkFrom${d.source.index}To${d.target.index}`);
 
   // Create the nodes
   let node = g.append("g")
@@ -161,6 +163,8 @@ function runSimulation(data, idSvg = "svgGraph") {
     .join("circle")
       .attr("r", 5)
       .attr("fill", (d, i) => colourNodeRegulation(d, i))
+      .attr("class", "node")
+      .attr("id", (d, i) => `node${i}`)
       .call(drag(simulation));
 
   // Create the labels
@@ -172,7 +176,9 @@ function runSimulation(data, idSvg = "svgGraph") {
     .selectAll(".text")
     .data(nodes)
     .join("text")
-      .text(d => d.name);
+      .text(d => d.name)
+      .attr("class", "text")
+      .attr("id", (d, i) => `text${i}`);
 
   // Call the zoom function on the SVG
   svg
