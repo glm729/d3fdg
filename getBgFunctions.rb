@@ -79,6 +79,7 @@ exclude = [
   "openTab.js",
   "prepareVisData.js",
   "processData.js",
+  "processZip.js",
   "readFile.js",
   "storeKLC.js",
   "storeKRE.js",
@@ -92,6 +93,10 @@ inDir = dirExt(dirFrom, ext).reject{|e| exclude.any?(e)}
 inDir.each do |file|
   # Read the file and strip comments
   text = removeComments(File.read("#{dirFrom}/#{file}").split(/\n/))
+  # Reject empty lines
+  text.reject!{|e| e.empty?}
+  # Strip the trailing semi-colon in the last line, if present
+  text[text.length - 1] = text.last.gsub(/};$/, "}")
   # Get header line data and swap around
   topLine = getTopLine(text[0])
   text[0] = topLine[:swap]
