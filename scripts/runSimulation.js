@@ -152,7 +152,7 @@ function runSimulation(data, idSvg = "svgGraph") {
     .join("line")
       .attr("stroke-width", 1)
       .attr("class", "link")
-      .attr("id", (d, i) => `linkFrom${d.source.index}To${d.target.index}`);
+      .attr("id", (d, i) => `link_f${d.source.index}_t${d.target.index}_`);
 
   // Create the nodes
   let node = g.append("g")

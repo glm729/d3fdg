@@ -28,6 +28,7 @@ async function processZip() {
   console.log("Found entries with links.");
   let links = opposeReduced.map(o => ({"source": o.lhs, "target": o.rhs}));
   let visData = {"nodes": withLinks, "links": links};
+  window._vis = visData;
   console.log("Vis data prepared, sending to SVG.");
   runSimulation(visData);
 }
