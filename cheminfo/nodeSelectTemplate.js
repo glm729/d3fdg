@@ -1,30 +1,37 @@
-// Get the names of the rows selected
-let names = API.getData("rowsSelected").resurrect().map(x => x.name);
+// Shorthand function to apply styles
+function applyStyles(domnode, css) {
+  for (let prop in css) domnode.style[prop] = css[prop];
+};
 
-// Initialise the template (as temporary)
-let tmp = "name\tcolour\tsize\n";
+// Get the names from the current node selection
+let names = API.getData("nodeSelection").resurrect().map(x => x.name);
 
-// Map over the names and make an empty row
-names.map(n => tmp += `${n}\t\t\t\n`);
-
-// Make the file to download
-let file = new File([tmp], {type: "text/tab-separated-values;charset=utf-8"});
-
-// Initialise the button and apply styles
-let button = document.createElement("button");
-button.style.fontFamily = "monospace";
-button.style.display = "block";
-button.style.borderRadius = 0;
-
-// Apply innerHTML and onclick function
-button.innerHTML = "Download visualisation parameter template";
-button.onclick = (() => saveAs(file, "nodeVisTemplate.tsv"));
-
-// Get the div sink for the button
+// Find and empty the sink
 let sink = document.getElementById("rowVisTempSink");
-
-// Empty the sink before another run
 sink.innerHTML = '';
 
-// Append the button
-sink.appendChild(button);
+if (names.length > 0) {
+  let button = document.createElement("button");
+  let css = {
+    borderRadius: "0px",
+    display: "block",
+    fontFamily: "monospace",
+    fontSize: "10px",
+    height: "100%",
+    marginLeft: "auto",
+    marginRight: "auto",
+    textAlign: "center",
+    padding: "4px 4px",
+    width: "100%"
+  };
+  applyStyles(button, css);
+  button.innerHTML = "Download visualisation parameter template";
+  let tmp = "name\tcolour\tsize\n";
+  names.map(n => tmp += `${n}\t\t\t\n`);
+  let file = new File(
+    [tmp],
+    {type: "text/tab-separated-values;charset=utf-8"}
+  );
+  button.onclick = (() => saveAs(file, "nodeVisTemplate.tsv"));
+  sink.appendChild(button);
+};
