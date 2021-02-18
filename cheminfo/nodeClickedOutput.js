@@ -50,7 +50,7 @@ function multiRowDiv(table, title, content) {
     row.appendChild(divCellTitle());
     let cell = divCell();
     cell.innerHTML = c;
-    row.appendChild(cell);
+    row.append(cell);
     table.appendChild(row);
   });
   return;
@@ -70,7 +70,7 @@ function singleRowDiv(table, title, content) {
   };
   let cell = divCell();
   cell.innerHTML = content;
-  row.appendChild(cell);
+  row.append(cell);
   table.appendChild(row);
   return;
 };
@@ -89,6 +89,24 @@ function addRow(table, title, content) {
   };
   singleRowDiv(table, title, content);
   return;
+};
+
+function aDoi(doi) {
+  let a = document.createElement("a");
+  a.href = `https://doi.org/${doi}`;
+  a.rel = "noopener noreferrer";
+  a.target = "_blank";
+  a.innerHTML = doi;
+  return a.outerHTML;
+};
+
+function aComp(cid) {
+  let a = document.createElement("a");
+  a.href = `https://www.kegg.jp/dbget-bin/www_bget?cpd:${cid}`;
+  a.rel = "noopener noreferrer";
+  a.target = "_blank";
+  a.innerHTML = cid;
+  return a.outerHTML;
 };
 
 
@@ -125,11 +143,11 @@ let add = [
   },
   {
     title: "Anchor ID",
-    content: nc.idAnchor
+    content: aComp(nc.idAnchor)
   },
   {
     title: "Other IDs",
-    content: nc.idOther
+    content: (nc.idOther === null) ? null : nc.idOther.map(aComp)
   },
   {
     title: "Biofluid",
@@ -145,7 +163,7 @@ let add = [
   },
   {
     title: "DOI",
-    content: [...new Set(nc.doi)].sort()
+    content: [...new Set(nc.doi)].sort().map(aDoi)
   }
 ];
 
