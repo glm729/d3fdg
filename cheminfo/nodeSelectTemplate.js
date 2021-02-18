@@ -1,7 +1,10 @@
-// Shorthand function to apply styles
+// Helper function to apply styles
 function applyStyles(domnode, css) {
   for (let prop in css) domnode.style[prop] = css[prop];
 };
+// Or these?
+// let app = function(d, c) {for (let p in c) d.style[p] = c[p]};
+// let app = ((d, c) => for (let p in c) d.style[p] = c[p]);
 
 // Get the names from the current node selection
 let names = API.getData("nodeSelection").resurrect().map(x => x.name);

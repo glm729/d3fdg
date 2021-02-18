@@ -57,45 +57,11 @@ async function unzip(content) {
   return results;
 };
 
-// Add the withId function to the background function definitions
-bg.getWithId = function(data, klc) {
-  let result = [];
-  let i = 0;
-  data.map(d => {
-    let extract = this.subsetData(d.name, klc);
-    let idScan = this.pickAnchor(d.name, extract);
-    if (idScan.idAnchor !== null) {
-      result.push(d);
-      result[i].idAnchor = idScan.idAnchor;
-      result[i].idOther = idScan.idOther;
-      i += 1;
-    };
-  });
-  return result;
-};
-
-// Function to save a ZIP file
-function saveZip(fileDetails, zipName) {
-  let zip = new JSZip();
-  fileDetails.map(f => {
-    zip.file(f.fileName, f.content, {base64: false});
-  });
-  zip.generateAsync({
-    type: "blob",
-    compression: "DEFLATE",
-    compressionOptions: {
-      level: 9
-    }
-  }).then(c => {
-    saveAs(c, zipName);
-  });
-};
-
 // Initialise the table
 makeTable("uploadStatus");
 
 // Get the ZIP contents
-let zip = API.getData("inputZip").file.content;
+let zip = API.getData("inputZip");
 addRow(["Retrieved raw ZIP data", (Date.now() - t0) / 1000]);
 
 // Get the contents of the ZIP
@@ -122,7 +88,6 @@ addRow(["Prepared RLI", (Date.now() - t0) / 1000]);
 
 // Get the data with ID
 let withId = bg.getWithId(rli, klc);
-API.createData("withId", withId);
 addRow(["Found entries with ID", (Date.now() - t0) / 1000]);
 
 // Get reduced opposing compounds
@@ -136,6 +101,7 @@ function getWithLinks(withId, opposeRed) {
 };
 
 let withLinks = getWithLinks(withId, opposeReduced);
+API.createData("withLinks", withLinks);
 
 // Get links
 let links = opposeReduced.map(o => {
@@ -149,7 +115,36 @@ addRow(["Visualisation data prepared", (Date.now() - t0) / 1000]);
 // Run the simulation
 bg.runSimulation(visData, "svgVis");
 
+function sortJsonAttr(obj, key = "name") {
+  let output = new Array();
+  [...new Set(obj.map(o => o[key]))].sort().map(j => {
+    obj.filter(o => o[key] === j).map(o => output.push(o));
+  });
+  return output;
+};
+
+API.createData("nodeData", sortJsonAttr(withLinks, "name"));
+API.createData("visData", visData);
+console.log("Saved visData.");
+
 /**
+// Function to save a ZIP file
+function saveZip(fileDetails, zipName) {
+  let zip = new JSZip();
+  fileDetails.map(f => {
+    zip.file(f.fileName, f.content, {base64: false});
+  });
+  zip.generateAsync({
+    type: "blob",
+    compression: "DEFLATE",
+    compressionOptions: {
+      level: 9
+    }
+  }).then(c => {
+    saveAs(c, zipName);
+  });
+};
+
 // Insert download button
 let ust = document.getElementById("uploadStatus");
 let button = document.createElement("button");

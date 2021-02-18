@@ -26,7 +26,8 @@ function convRawTsvJson(raw, header = true) {
 };
 
 // Get the data and convert to JSON
-let data = convRawTsvJson(API.getData("visTsvContent").resurrect());
+let input = API.getData("visTsvContent");
+let data = convRawTsvJson(input)
 
 // Save it as the new node selection
 API.createData("nodeSelection", data);

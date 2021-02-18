@@ -92,10 +92,8 @@ function addRow(table, title, content) {
 };
 
 
-/* Operations */
-
-// Get data for clicked node
-let nc = API.getData("nodeClicked").resurrect();
+// Get node clicked data
+let nc = API.getData("nodeLast").resurrect();
 
 // Get output container
 let container = document.getElementById("nodeClickedContent");
@@ -119,16 +117,36 @@ table.appendChild(header);
 
 // Add rows to the table
 let reg = [...new Set(nc.regulation)];
-let bio = [...new Set(nc.biofluid.filter(x => x !== ''))].sort();
 
 let add = [
-  {title: "Name", content: nc.name},
-  {title: "Anchor ID", content: nc.idAnchor},
-  {title: "Other IDs", content: nc.idOther},
-  {title: "Biofluid", content: bio},
-  {title: "Regulation", content: (reg.length === 1) ? reg[0] : "conflict"},
-  {title: "Times reported", content: nc.timesReported},
-  {title: "DOI", content: [...new Set(nc.doi)].sort()}
+  {
+    title: "Name",
+    content: nc.name
+  },
+  {
+    title: "Anchor ID",
+    content: nc.idAnchor
+  },
+  {
+    title: "Other IDs",
+    content: nc.idOther
+  },
+  {
+    title: "Biofluid",
+    content: [...new Set(nc.biofluid.filter(x => x !== ''))].sort()
+  },
+  {
+    title: "Regulation",
+    content: (reg.length === 1) ? reg[0] : "conflict"
+  },
+  {
+    title: "Times reported",
+    content: nc.timesReported
+  },
+  {
+    title: "DOI",
+    content: [...new Set(nc.doi)].sort()
+  }
 ];
 
 add.map(a => addRow(table, a.title, a.content));
