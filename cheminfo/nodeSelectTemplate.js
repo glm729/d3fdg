@@ -2,9 +2,6 @@
 function applyStyles(domnode, css) {
   for (let prop in css) domnode.style[prop] = css[prop];
 };
-// Or these?
-// let app = function(d, c) {for (let p in c) d.style[p] = c[p]};
-// let app = ((d, c) => for (let p in c) d.style[p] = c[p]);
 
 // Get the names from the current node selection
 let names = API.getData("nodeSelection").resurrect().map(x => x.name);
@@ -19,8 +16,8 @@ if (names.length > 0) {
     borderRadius: "0px",
     display: "block",
     fontFamily: "monospace",
-    fontSize: "10px",
-    height: "100%",
+    fontSize: "11px",
+    height: "40px",
     marginLeft: "auto",
     marginRight: "auto",
     textAlign: "center",
