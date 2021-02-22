@@ -89,7 +89,13 @@ function runSimulation(data, idSvg = "svgGraph", opt = {}) {
       .style("opacity", o => {
         let c1 = (o.source.index === i.index);
         let c2 = (o.target.index === i.index);
-        return (c1 || c2) ? 0.7 : (opacity * 0.7);
+        let c3 = nodes[o.source.index].n < 2;
+        let c4 = nodes[o.target.index].n < 2;
+        if (c1 || c2) {
+          if (c3 || c4) return (opacity * 0.7);
+          return 0.7;
+        };
+        return (opacity * 0.7);
       })
       .style("stroke", o => {
         let c1 = (o.source.index === i.index);
