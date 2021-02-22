@@ -8,6 +8,9 @@
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <!-- Import JSZip -->
     <script src="jszip.min.js"></script>
+    <!-- Cheater functions for pulling in the KEGG data -->
+    <script src="internal/loadKLC.js"></script>
+    <script src="internal/loadKRE.js"></script>
     <!-- Import own scripts -->
     <script src="scripts/assignEmptyHeader.js"></script>
     <script src="scripts/checkDataPresent.js"></script>
@@ -15,17 +18,22 @@
     <script src="scripts/convKeggListCompound.js"></script>
     <script src="scripts/convKeggReactionEquation.js"></script>
     <script src="scripts/convRawTsvJson.js"></script>
+    <script src="scripts/getAllCompounds.js"></script>
     <script src="scripts/getOppose.js"></script>
     <script src="scripts/getWithId.js"></script>
     <script src="scripts/getWithLinks.js"></script>
     <script src="scripts/openTab.js"></script>
     <script src="scripts/pickAnchor.js"></script>
+    <script src="scripts/processTsv.js"></script>
     <script src="scripts/processZip.js"></script>
     <script src="scripts/readFile.js"></script>
     <script src="scripts/reduceOppose.js"></script>
+    <script src="scripts/reduceShortlist.js"></script>
     <script src="scripts/reduceUniqueNames.js"></script>
     <script src="scripts/runSimulation.js"></script>
+    <script src="scripts/shortlistReactions.js"></script>
     <script src="scripts/subsetData.js"></script>
+    <script src="scripts/swapOtherIds.js"></script>
     <script src="scripts/unzip.js"></script>
   </head>
   <body onload="document.getElementById('defaultOpen').click();">
@@ -42,7 +50,13 @@
         class="tabButton"
         onclick="openTab(event, 'tab01');"
         >
-        Visualisation
+        ZIP upload
+      </button>
+      <button
+        class="tabButton"
+        onclick="openTab(event, 'tab02');"
+        >
+        TSV upload
       </button>
     </div>
     <!-- Define tab content -->
@@ -56,12 +70,13 @@
           graph (network) visualisation of metabolites.
         </p>
         <p>
-          Mr. George L. Malone, 3<sup>rd</sup> of February, 2021.
+          Mr. George L. Malone, 22<sup>nd</sup> of February, 2021.
         </p>
       </div>
-      <hr>
+    </div>
+    <div class="tabContent" id="tab01">
       <div style="padding: 0px 14px">
-        <h2>Data upload</h2>
+        <h2>ZIP upload</h2>
       </div>
       <div style="padding-bottom: 6px">
         <input
@@ -84,14 +99,56 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="tabContent" id="tab01">
+      <hr>
       <div style="padding-bottom: 14px">
         <h2>Visualisation</h2>
       </div>
-      <div id="svgSink">
+      <div id="sinkSvgZip">
         <svg
-          id="svgGraph"
+          id="svgZip"
+          height="720px"
+          width="900px"
+          style="background: #fffaf0;"
+          >
+        </svg>
+      </div>
+    </div>
+    <div class="tabContent" id="tab02">
+      <div style="padding: 0px 14px">
+        <h2>TSV upload</h2>
+        <p>
+          <strong>NOTE: </strong>Only use this for metabolite shortlists, as
+          the number of first neighbours can be quite large!
+        </p>
+      </div>
+      <div style="padding-bottom: 6px">
+        <input
+          type="file"
+          id="tsvUpload"
+          style="display: none;"
+          onchange="this.files[0].text().then(processTsv);"
+          >
+        </input>
+        <div class="table" style="padding-left: 14px">
+          <div class="table-row">
+            <div class="table-cell">
+              <button
+                class="inputButton"
+                onclick="document.getElementById('tsvUpload').click();"
+                >
+                Upload TSV
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div style="padding-bottom: 14px">
+        <h2>Visualisation</h2>
+      </div>
+      <div id="sinkSvgTsv">
+        <svg
+          id="svgTsv"
           height="720px"
           width="900px"
           style="background: #fffaf0;"

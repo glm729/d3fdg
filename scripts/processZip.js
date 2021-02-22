@@ -30,5 +30,5 @@ async function processZip() {
   let visData = {"nodes": withLinks, "links": links};
   window._vis = visData;
   console.log("Vis data prepared, sending to SVG.");
-  runSimulation(visData);
+  runSimulation(visData, idSvg = "svgZip");
 }

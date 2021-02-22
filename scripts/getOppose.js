@@ -18,7 +18,7 @@ function getOppose(withId, kre) {
     // If the anchor ID isn't already present, push to idAll
     if (idAll.indexOf(w.idAnchor) === -1) idAll.push(w.idAnchor);
     // If any other IDs
-    if (w.idOther !== null) {
+    if (w.idOther) {
       // For each other ID, if not present, push to idAll
       w.idOther.map(o => {if (idAll.indexOf(o) === -1) {idAll.push(o)}});
     };

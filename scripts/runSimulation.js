@@ -4,24 +4,36 @@
  * https://observablehq.com/@d3/disjoint-force-directed-graph
  *
  * - Refactored / Restructured considering its previous incarnation(s)
+ * - Added some accounting for optional inputs
  *
  * @param {Object} data Input data for the simulation, containing the nodes and
  * links data.
  * @param {String} idSvg ID of the DOM node for the SVG.
  * @return N/A.  Runs FDG simulation.
  */
-function runSimulation(data, idSvg = "svgGraph") {
+function runSimulation(data, idSvg = "svgGraph", opt = {}) {
+  // Helper function for applying default selections
+  function applyDefaults(input, defaults) {
+    for (let k in defaults) {
+      if (!input[k]) input[k] = defaults[k];
+    };
+    return input;
+  };
+  // Assign defaults and apply options
+  let defs = {
+    nodeColourCb: function(d, i) {
+      let col = null;
+      let reg = [...new Set(d.regulation)];
+      if (reg.length > 1) return "cyan";
+      if (reg[0] === "increased") return "red";
+      if (reg[0] === "decreased") return "green";
+      return "cyan";
+    }
+  };
+  let _opt = applyDefaults(opt, defs);
+
 
   /*** Function definitions ***/
-
-  function colourNodeRegulation(d, i) {
-    let col = null;
-    let reg = [...new Set(d.regulation)];
-    if (reg.length > 1) return "cyan";
-    if (reg[0] === "increased") return "red";
-    if (reg[0] === "decreased") return "green";
-    return "cyan";
-  };
 
   // Define simulation drag actions
   function drag(sim) {
@@ -114,7 +126,7 @@ function runSimulation(data, idSvg = "svgGraph") {
   /*** Operations ***/
 
   // Initialise opacity and index links store
-  let opacity = 0.33;
+  let opacity = 0.15;
   let indexLink = new Object();
 
   // Initialise SVG in the document
@@ -162,7 +174,7 @@ function runSimulation(data, idSvg = "svgGraph") {
     .data(nodes)
     .join("circle")
       .attr("r", 5)
-      .attr("fill", (d, i) => colourNodeRegulation(d, i))
+      .attr("fill", (d, i) => _opt.nodeColourCb(d, i))
       .attr("class", "node")
       .attr("id", (d, i) => `node${i}`)
       .call(drag(simulation));
