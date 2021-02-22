@@ -19,17 +19,42 @@ function processTsv(tsv) {
   // Reduce the shortlist to unique (undirected) reactions
   let slr = reduceShortlist(sls);
   // Get the array of all nodes (i.e. add first neighbours)
-  let ac = getAllCompounds(withId, slr);
+  let ac = getAllCompounds(withId, slr).map(a => numLinks(a, slr));
   // Get the links between nodes
   let links = slr.map(o => ({source: o.lhs, target: o.rhs}));
   // Prepare the visualisation data
   let visData = {nodes: ac, links: links};
-  // Run the simulation, with an alternate node colour callback
+  // Define alternate callbacks
+  function cb_nodeColour(d, i) {
+    return d.nodeColour;
+  };
+  function cb_nodeSize(d, i) {
+    if (d.nodeCore) return d.nodeSize;
+    if (d.n > 1) return 5;
+    return 0;
+  };
+  function cb_text(d, i) {
+    if (d.nodeCore) return d.name;
+    if (d.n < 2) return '';
+    function pickShortest(arr) {
+      let srt = arr.slice().sort();
+      return srt.reduce((f, n) => {
+        if (n.length < f.length) return n;
+        return f;
+      }, srt[0]);
+    };
+    let data = klc.filter(x => x.idKegg === d.idAnchor)[0];
+    if (data.nameKegg) return pickShortest(data.nameKegg);
+    return d.idAnchor;
+  };
+  // Run the simulation, with alternate callbacks
   runSimulation(
     visData,
     idSvg = "svgTsv",
     opt = {
-      nodeColourCb: (d, i) => d.nodeColour
+      cb_nodeColour: cb_nodeColour,
+      cb_nodeSize: cb_nodeSize,
+      cb_text: cb_text
     }
   );
 }

@@ -21,13 +21,14 @@ function runSimulation(data, idSvg = "svgGraph", opt = {}) {
   };
   // Assign defaults and apply options
   let defs = {
-    nodeColourCb: function(d, i) {
-      let col = null;
-      let reg = [...new Set(d.regulation)];
-      if (reg.length > 1) return "cyan";
-      if (reg[0] === "increased") return "red";
-      if (reg[0] === "decreased") return "green";
+    cb_nodeColour: function(d, i) {
       return "cyan";
+    },
+    cb_nodeSize: function(d, i) {
+      return 5;
+    },
+    cb_text: function(d, i) {
+      return d.idAnchor;
     }
   };
   let _opt = applyDefaults(opt, defs);
@@ -113,8 +114,13 @@ function runSimulation(data, idSvg = "svgGraph", opt = {}) {
       .attr("y1", d => d.source.y)
       .attr("y2", d => d.target.y);
     node.attr("transform", d => genTranslate(d.x, d.y));
-    text.attr("transform", d => genTranslate(d.x + 6, d.y + 2.5));
-    // ^ Text offset is currently hardcoded
+    text.attr("transform", (d, i) => {
+      let off = {
+        x: +document.querySelector(`#node${i}`).getAttribute("r") + 2,
+        y: 2.5
+      };
+      return genTranslate(d.x + off.x, d.y + off.y);
+    });
   };
 
   // SVG zoom function
@@ -173,8 +179,8 @@ function runSimulation(data, idSvg = "svgGraph", opt = {}) {
     .selectAll(".node")
     .data(nodes)
     .join("circle")
-      .attr("r", 5)
-      .attr("fill", (d, i) => _opt.nodeColourCb(d, i))
+      .attr("r", (d, i) => _opt.cb_nodeSize(d, i))
+      .attr("fill", (d, i) => _opt.cb_nodeColour(d, i))
       .attr("class", "node")
       .attr("id", (d, i) => `node${i}`)
       .call(drag(simulation));
@@ -188,7 +194,7 @@ function runSimulation(data, idSvg = "svgGraph", opt = {}) {
     .selectAll(".text")
     .data(nodes)
     .join("text")
-      .text(d => d.name)
+      .text((d, i) => _opt.cb_text(d, i))
       .attr("class", "text")
       .attr("id", (d, i) => `text${i}`);
 
