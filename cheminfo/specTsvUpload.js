@@ -1,8 +1,12 @@
 /*** Operations ***/
 
+let dyno = document.querySelector('#dyno');
+
 let tsvContent = API.getData('tsvContent').resurrect();
 
 let ca = new CouchAttachments();
+
+dyno.innerHTML = 'Fetching attachment data, please wait....';
 ca.fetchList().then(flThen0).then(d => flThen1(tsvContent, d));
 
 
@@ -16,6 +20,7 @@ async function flThen0(attachments) {
     let name = f.filename.match(/\/(?<n>\w+)\./).groups.n;
     await fetch(f.url).then(r => r.json()).then(d => data[name] = d);
   };
+  dyno.innerHTML = 'Attachments loaded, processing data....';
   return data;
 };
 
@@ -43,6 +48,7 @@ function flThen1(tsvContent, data) {
     if (d.n < 2) return '';
     return d.name;
   };
+  dyno.innerHTML = 'Attachments loaded and data processed.';
   runSimulation(
     visData,
     'svgVisMain',
